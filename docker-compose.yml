@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+    ports: [ ]
+    #      - 127.0.0.1:3306:3306
+    volumes:
+      - gsrv-db:/var/lib/maria
+  adminer:
+    image: adminer
+    restart: always
+
+  api:
+    build: api
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+    volumes:
+      - ./api/:/usr/src/app
+    command: yarn run start:dev
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:8080
+volumes:
+  gsrv-db:
